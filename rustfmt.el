@@ -76,10 +76,18 @@
   (message "Formatted buffer with rustfmt."))
 
 ;;;###autoload
-(defun rustfmt-enable-on-save ()
-  "Run rustfmt when saving buffer."
+(defun rustfmt-on-save ()
+  "Toggle whether we run rustfmt when saving the buffer."
   (interactive)
-  (add-hook 'before-save-hook #'rustfmt-format-buffer nil t))
+  (if (memq 'rustfmt-format-buffer before-save-hook)
+      (progn
+        (remove-hook 'before-save-hook #'rustfmt-format-buffer t)
+        (message "rustfmt-on-save disabled."))
+    (progn
+      (add-hook 'before-save-hook #'rustfmt-format-buffer nil t)
+      (message "rustfmt-on-save enabled."))))
+
+(defalias 'rustfmt-enable-on-save #'rustfmt-on-save)
 
 (provide 'rustfmt)
 ;;; rustfmt.el ends here
